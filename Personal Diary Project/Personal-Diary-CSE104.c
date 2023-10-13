@@ -3,14 +3,12 @@
 #include<string.h>
 int main()
 {
-    FILE *header = fopen("My Diary","r");
-    FILE *user = fopen("user","r");
+    FILE *header = fopen("header","r");
+    //FILE *user = fopen("user","r");
 
     char username[20]="Lubaba";
     char date[10];
     char reader;
-    char entry_date;
-
     int option;
 
     printf("Hello %s.\nWhat do you want to do?\n1. Read an entry\n2. Make a new entry.\n\nPlease type your preferred option: ",username);
@@ -35,53 +33,86 @@ int main()
     }
     //selects the option - end
 
+
     scanf("%s", date);     // entries the -.
     strcat(date,".txt");   //               '-> filename
     FILE *fptr;
     fptr = fopen(date, "w"); // opens/creates that file
 
-    //copies contents of template - start
+
+    /*//copies contents of template - start
     reader = fgetc(header);
     while (reader != EOF){
         fputc(reader, fptr);
         reader = fgetc(header);
     }
-    //copies contents of template - start
+    fclose(fptr);
+    //copies contents of template - end*/
 
     switch(option){
         case 1:
-            fptr = fopen(date, "w");
+            //opens, reads, prints and closes file - start
+            fptr = fopen(date, "r");
             if(fptr == NULL)
                 printf("No such entry\n");
+            else
+                printf("The entry for %.8s is:\n\n",date);
+
 
             reader = fgetc(fptr);
             while (reader != EOF){
                 printf ("%c", reader);
                 reader = fgetc(fptr);
             }
+            printf("\n\n");
+
+            fclose(fptr);
+            //opens, reads, prints and closes file - end
 
             break;
 
         case 2:
 
+            printf("Write your diary entry: \nTo end your entry, type: \"save\" in the next line and press Enter.\n\n");
+
+            //opens, writes, and closes file - start
+            fptr = fopen(date, "w");
+
+            char entry[1000];
+            while(1){
+                scanf(" %[^\n]",entry);
+                if(!(strcmp(entry,"save")))
+                    break;
+                else
+                    fprintf(fptr,entry);
+            }
+            fclose(fptr);
+            //opens, writes, and closes file - end
 
 
-            printf("Enter date (dd/mm/yyyy): ");
-            scanf("%s", entry_date);
+            //opens, reads, prints and closes file - start
+            fptr = fopen(date, "r");
+            if(fptr == NULL)
+                printf("No such entry\n");
+            else
+                printf("The entry for %.8s is:\n\n",date);
+
 
             reader = fgetc(fptr);
             while (reader != EOF){
-                printf ("%c", fptr);
+                printf ("%c", reader);
                 reader = fgetc(fptr);
             }
+            printf("\n\n");
 
+            fclose(fptr);
+            //opens, reads, prints and closes file - end
             break;
     }
 
     fclose(header);
-    fclose(user);
+    //fclose(user);
     fclose(fptr);
-    //fclose(body);
 
     return 0;
 }
