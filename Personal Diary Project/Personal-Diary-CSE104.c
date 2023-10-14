@@ -11,13 +11,17 @@ void readrecord();
 void editrecord();
 void deleterecord();
 void editpassword();
-void exitdiary();
+void exit_diary();
 void select_option();
 
 struct entry_record{
     char time[6];
     char body[7000];
 };
+
+struct user{
+    char password[20];
+} owner;
 
 int main()
 {
@@ -29,75 +33,52 @@ int main()
 }
 
 void login(){
+
 	int attempt=0,i=0;
-    char username[20], c;
-    char password[20];
-    char checkuser[20];
+    char c;
     char checkpass[20];
-    char *passptr = &checkpass[20];
-    char *userptr = &checkuser[20];
 
     main_menu();
             printf("\t\t\t .-------------.\n");
             printf("\t\t\t<  LOGIN  MENU  >\n");
             printf("\t\t\t '-------------'\n\n");
 
-    if(!strcmp(checkuser,"NULL") && !strcmp(checkpass,"NULL")){
+    if(strcmp(owner.password,"0")!=0){
         do{
-            printf("\n\n\t\tENTER USERNAME: ");
-            gets(username);
             printf("\n\t\tENTER PASSWORD: ");
 
             while(i<10){
-                password[i]=getch();
-                c=password[i];
+                checkpass[i]=getch();
+                c=checkpass[i];
                 if(c==13) break;
                 else printf("*");
                 i++;
             }
-            password[i]='\0';
+            checkpass[i]='\0';
             i=0;
-            if(!strcmp(username,checkuser)==0 && !strcmp(password,checkpass)){
-                printf("\n\n\t\tSUCCESSFUL LOGIN\n\t\tWelcome Back %s",checkuser);
+            if(!strcmp(owner.password,checkpass)){
+                printf("\n\n\t\tSUCCESSFUL LOGIN\n\t\tWelcome Back\n");
                 printf("\n\n\t\t\PRESS ANY KEY TO CONTINUE...");
                 getch();
                 break;
             }
             else{
-                printf("\n\t\tUSER NOT IDENTIFIED...\n\t\tPRESS ANY KEY TO TRY AGAIN...");
+                printf("\n\t\tINCORRECT PASSWORD...\n");
                 attempt++;
-                getch();
             }
         } while(attempt<3);
-            if (attempt>2){
-                printf("\n\t\tSorry, you have entered the wrong username and password three times!!!\n\t\tClosing Diary...\n");
-                getch();
-                exit(0);
-            }
-            system("cls");
-        } else {
-            printf("\n\t\tNEW USER IDENTIFIED\n");
 
-            int nflag = 1, pflag = 1;
-            while(nflag){
-                printf("\n\n\t\tSET USERNAME (10 CHARACTERS MAX): ");
-                scanf("%s", *userptr);
-                if(strlen(checkuser)>10)
-                    printf("\t\tUSERNAME TOO LONG...\nPlease enter 10 characters or below.\n");
-                else
-                    nflag = 0;
-            }
-            while(pflag){
-                printf("\n\t\tSET PASSWORD (10 DIGITS MAX): ");
-                scanf("%s", *passptr);
-                if(strlen(checkpass)>10)
-                    printf("\t\tPASSWORD TOO LONG...\nPlease enter 10 characters or below.\n");
-                else
-                    pflag = 0;
-            }
-            printf("\n\n\tUSER DATA LOGGED SUCCESSFULLY...\n");
-            login();
+        if (attempt>2){
+            printf("\n\t\tSorry, you have entered the wrong password three times!!!\n\t\tClosing Diary...\n");
+            exit(0);
         }
+        system("cls");
+
+    } else {
+
+        printf("\n\t\tNEW USER IDENTIFIED\n");
+        editpassword();
+    }
 }
 
 void main_menu(){
@@ -206,10 +187,34 @@ void deleterecord(){
 }
 
 void editpassword(){
+    int passflag = 1;
+    char temppass[30];
 
+    while(passflag){
+        printf("\t\tSET PASSWORD (20 CHARACTERS MAX): ");\
+        fgets(temppass, 30, stdin);
+        if(strlen(temppass)>20)
+            printf("\n\t\tPASSWORD LONGER THAN 2O CHARACTERS...\n\n");
+        else
+            printf("\t\tPASSWORD CHANGED SUCCESSFULLY\n");
+            passflag = 0;
+        }
+
+        printf("\n\t\tWHAT WOULD YOU LIKE TO DO :\n\n\t\t(1). Go to Login Menu\n\t\t(2). Exit Program\n\n\t\tEnter your choice: ");
+
+        int choice;
+        scanf("%d", &choice);
+
+        if(choice == 1){
+            system("cls");
+            login();
+        } else {
+            exit_diary();
+        }
 }
 
 void exit_diary(){
+    system("cls");
     printf("\n\n\t\tThank you for using the program ~ <3\n\n");
     printf("\t\t      wWWWw\t\t wWWWw\n");
     printf("\t\tvVVVv (___) wWWWw\t (___)  vVVVv\n");
@@ -218,6 +223,7 @@ void exit_diary(){
     printf("\t\t \\|   \\ |/   \\| /   ~Y~   \\|    \\ |/\n");
     printf("\t\t \\|/   \\|/   \\|/    \\|/   \\|/    \\\|/ \n");
     printf("\t\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\t\tart by: Joan G. Stark\n");
+    exit(0);
 }
 
 
