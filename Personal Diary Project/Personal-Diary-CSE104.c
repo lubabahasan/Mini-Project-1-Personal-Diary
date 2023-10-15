@@ -13,15 +13,12 @@ void deleterecord();
 void editpassword();
 void exit_diary();
 void select_option();
+int check_empty();
 
 struct entry_record{
     char time[6];
     char body[7000];
 };
-
-struct user{
-    char password[20];
-} owner;
 
 int main()
 {
@@ -43,20 +40,23 @@ void login(){
             printf("\t\t\t<  LOGIN  MENU  >\n");
             printf("\t\t\t '-------------'\n\n");
 
-    if(strcmp(owner.password,"0")!=0){
+    FILE *fptr = fopen("userdata", "a+");
+
+    if(check_empty()){
         do{
             printf("\n\t\tENTER PASSWORD: ");
 
-            while(i<10){
+            while(i<21){
                 checkpass[i]=getch();
                 c=checkpass[i];
                 if(c==13) break;
                 else printf("*");
                 i++;
             }
-            checkpass[i]='\0';
             i=0;
-            if(!strcmp(owner.password,checkpass)){
+
+
+            if(1){
                 printf("\n\n\t\tSUCCESSFUL LOGIN\n\t\tWelcome Back\n");
                 printf("\n\n\t\t\PRESS ANY KEY TO CONTINUE...");
                 getch();
@@ -72,6 +72,7 @@ void login(){
             printf("\n\t\tSorry, you have entered the wrong password three times!!!\n\t\tClosing Diary...\n");
             exit(0);
         }
+
         system("cls");
 
     } else {
@@ -79,6 +80,7 @@ void login(){
         printf("\n\t\tNEW USER IDENTIFIED\n");
         editpassword();
     }
+    fclose(fptr);
 }
 
 void main_menu(){
@@ -146,7 +148,7 @@ void addrecord(){
     char time[6];
     char more = 'y';
 
-    printf("\t\tEnter the date of your record\n\t\t(dd/mm/yyyy) : ");
+    printf("\t\tEnter the date of your record\n\t\t(dd.mm.yyyy) : ");
     fflush(stdin);
     scanf("%s", date);
 
@@ -200,6 +202,11 @@ void editpassword(){
             passflag = 0;
         }
 
+        FILE *fptr = fopen ("userdata", "a+");
+
+        fprintf(fptr, temppass);
+        fclose(fptr);
+
         printf("\n\t\tWHAT WOULD YOU LIKE TO DO :\n\n\t\t(1). Go to Login Menu\n\t\t(2). Exit Program\n\n\t\tEnter your choice: ");
 
         int choice;
@@ -224,6 +231,15 @@ void exit_diary(){
     printf("\t\t \\|/   \\|/   \\|/    \\|/   \\|/    \\\|/ \n");
     printf("\t\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\t\tart by: Joan G. Stark\n");
     exit(0);
+}
+
+int check_empty(){
+    FILE *fptr = fopen("userdata", "a+");
+    if(fgetc(fptr)==EOF)
+        return 0;
+    else
+        return 1;
+    fclose(fptr);
 }
 
 
