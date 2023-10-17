@@ -3,6 +3,8 @@
 #include<string.h>
 
 int option;
+char date[11];
+char time[6];
 
 void login();
 void main_menu();
@@ -144,18 +146,17 @@ void addrecord(){
     printf("\t\t\t<  Add Entry... >\n");
     printf("\t\t\t '-------------'\n\n");
 
-    char date[11];
-    char time[6];
+
     char more = 'y';
 
     printf("\t\tEnter the date of your record\n\t\t(dd.mm.yyyy) : ");
     fflush(stdin);
     scanf("%s", date);
 
-    FILE *fptr = fopen(date, "ab+");
+    FILE *fptr = fopen(date, "a+");
 
-    if (fptr==NULL ){
-        fptr=fopen(date,"wb+");
+    /*if (fptr==NULL ){
+        fptr=fopen(date,"a+");
         if(fptr==NULL){
 
             printf("\n\t\tSYSTEM ERROR...\n");
@@ -163,10 +164,11 @@ void addrecord(){
             getch();
             return ;
         }
-    }
+    }*/
 
     while(more=='Y' || more=='y'){
         fflush(stdin);
+        printf("\t\tEnter the time of your record\n\t\t(hh.mm) : ");
         scanf("%s", time);
 
     }
@@ -177,7 +179,45 @@ void addrecord(){
 }
 
 void readrecord(){
-    return 0;
+
+    int ch;
+
+    printf("\t\tEnter the date of the record\n\t\t(dd.mm.yyyy) : ");
+    fflush(stdin);
+    scanf("%s", date);
+    fflush(stdin);
+    printf("\t\tEnter the time of the record\n\t\t(hh.mm) : ");
+    scanf("%s", time);
+
+    system("cls");
+
+    FILE *fptr = fopen(date, "a+");
+
+    main_menu();
+    printf("\t\tRecord of %s\n", date);
+    printf("\n\t\t-------------------\n\t\t");
+    do{
+        if(ch==10)
+            printf("\t\t-------------------\n\t\t");
+        ch = fgetc(fptr);
+        printf("%c", ch);
+    } while (ch != EOF);
+    printf("\n\t\t-------------------\n");
+
+    printf("\n\n\n\t\tWHAT WOULD YOU LIKE TO DO NEXT :\n\n\t\t(1). Read Another Record\n\t\t(2). Go to Main Menu\n\t\t(3). Exit Program\n\n\t\tEnter your choice: ");
+
+        int choice;
+        scanf("%d", &choice);
+
+        system("cls");
+
+        if(choice == 1){
+            login();
+        } else {
+            exit_diary();
+        }
+
+    fclose(fptr);
 }
 
 void editrecord(){
@@ -212,8 +252,8 @@ void editpassword(){
         int choice;
         scanf("%d", &choice);
 
+        system("cls");
         if(choice == 1){
-            system("cls");
             login();
         } else {
             exit_diary();
