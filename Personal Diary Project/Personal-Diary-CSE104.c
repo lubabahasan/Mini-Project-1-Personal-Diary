@@ -35,11 +35,19 @@ void login(){
     char givenpass[20];
 
     banner();
-    printf("\t\t\t .-------------.\n");
-    printf("\t\t\t<  LOGIN  MENU  >\n");
-    printf("\t\t\t '-------------'\n\n");
+    printf("\t\t\t .------------.\n");
+    printf("\t\t\t<  LOGIN MENU  >\n");
+    printf("\t\t\t '------------'\n\n");
 
     FILE *fptr = fopen("userdata", "r");
+    char checkpass[20];
+    fgets(checkpass, 21, fptr);
+    if(!strcmp(checkpass,"PNSY")){ //PasswordNotSetYet
+        fclose(fptr);
+        printf("\t\tNEW USER DETECTED\n\n\t\tPRESS ANY KEY TO CONTINUE...\n\t\t");
+        getch();
+        editpassword(1);
+    }
 
     do{
         printf("\n\t\tENTER PASSWORD: ");
@@ -52,14 +60,10 @@ void login(){
             i++;
         }
         givenpass[i]='\0';
-
-        char checkpass[20];
-        fgets(checkpass, 21, fptr);
-
         i=0;
 
         if(!strcmp(checkpass,givenpass)){
-            printf("\n\n\t\tSUCCESSFUL LOGIN\n\t\tWelcome Back\n");
+            printf("\n\n\t\tSUCCESSFUL LOGIN\n\n\t\tWelcome Back!\n");
             printf("\n\n\t\t\PRESS ANY KEY TO CONTINUE...");
             getch();
             system("cls");
@@ -257,12 +261,7 @@ void deleterecord(){
 
 }
 
-void editpassword(){
-
-    FILE *fptr = fopen("userdata", "r");
-    char newuser[20];
-    fgets(newuser, 21, fptr);
-    fclose(fptr);
+void editpassword(int flag){
 
     system("cls");
     banner();
@@ -270,8 +269,42 @@ void editpassword(){
     printf("\t\t\t<  Edit Password  >\n");
     printf("\t\t\t '---------------'\n\n");
 
-    if(!strcmp(newuser,"PSNY")); //PasswordNotSetYet
-        printf("\t\tPLEASE SET A NEW PASSWORD: ");
+    int a = 0, i = 0;
+
+    if(!flag){
+        FILE *fptr = fopen("userdata", "r");
+        char old[20], inp[20], c;
+        fgets(old, 21, fptr);
+        do{
+            printf("\n\t\tEnter your current password to continue: ");
+
+            while(i<21){
+                inp[i]=getch();
+                c=inp[i];
+                if(c==13) break;
+                else printf("*");
+                i++;
+            }
+            inp[i]='\0';
+            i=0;
+
+            if(!strcmp(inp[i],old)){
+                printf("\n\n\t\tUSER VERIFIED\n\n\t\t\PRESS ANY KEY TO CONTINUE...");
+                getch();
+                system("cls");
+                break;
+            }
+            else{
+                printf("\n\t\tINCORRECT PASSWORD...\n");
+                a++;
+            }
+        } while(a<3);
+
+        if(a>2){
+            printf("\n\t\tYou've entered the wrong password three times!\n\t\tACCESS DENIED!\n\n\t\tClosing Diary...\n\n\n");
+            exit(0);
+        }
+    }
 
     /*int passflag = 1;
     char temppass[30];
@@ -291,6 +324,7 @@ void editpassword(){
     fprintf(fptr, temppass);
     fclose(fptr);
 
+    */
     printf("\n\t\tWHAT WOULD YOU LIKE TO DO :\n\n\t\t(1). Go to Login Menu\n\t\t(2). Exit Program\n\n\t\tEnter your choice: ");
 
     int choice;
@@ -302,7 +336,6 @@ void editpassword(){
     } else {
         exit_diary();
     }
-    */
 }
 
 void exit_diary(){
