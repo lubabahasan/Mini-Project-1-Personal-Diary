@@ -5,15 +5,16 @@
 char date[11];
 char time[6];
 
-void login();
 void banner();
+void login();
+void select_option();
 void addrecord();
 void readrecord();
 void editrecord();
 void deleterecord();
 void editpassword();
 void exit_diary();
-void select_option();
+
 
 struct entry_record{
     char time[6];
@@ -261,7 +262,7 @@ void deleterecord(){
 
 }
 
-void editpassword(int flag){
+void editpassword(int newuserdetect){
 
     system("cls");
     banner();
@@ -271,16 +272,16 @@ void editpassword(int flag){
 
     int a = 0, i = 0;
 
-    if(!flag){
+    if(newuserdetect!=1){
         FILE *fptr = fopen("userdata", "r");
         char old[20], inp[20], c;
         fgets(old, 21, fptr);
         do{
-            printf("\n\t\tEnter your current password to continue: ");
+            printf("\n\t\tENTER THE CURRENT PASSWORD: ");
 
             while(i<21){
-                inp[i]=getch();
-                c=inp[i];
+                inp[i] = getch();
+                c = inp[i];
                 if(c==13) break;
                 else printf("*");
                 i++;
@@ -288,10 +289,9 @@ void editpassword(int flag){
             inp[i]='\0';
             i=0;
 
-            if(!strcmp(inp[i],old)){
+            if(!strcmp(inp,old)){
                 printf("\n\n\t\tUSER VERIFIED\n\n\t\t\PRESS ANY KEY TO CONTINUE...");
                 getch();
-                system("cls");
                 break;
             }
             else{
@@ -300,42 +300,81 @@ void editpassword(int flag){
             }
         } while(a<3);
 
+        fclose(fptr);
         if(a>2){
             printf("\n\t\tYou've entered the wrong password three times!\n\t\tACCESS DENIED!\n\n\t\tClosing Diary...\n\n\n");
             exit(0);
         }
     }
 
-    /*int passflag = 1;
-    char temppass[30];
+    int flg = 0;
+    do{
+        FILE *fptr = fopen("userdata", "w");
 
-    while(passflag){
-        printf("\t\tSET PASSWORD (20 CHARACTERS MAX): ");\
-        fgets(temppass, 30, stdin);
-        if(strlen(temppass)>20)
-            printf("\n\t\tPASSWORD LONGER THAN 2O CHARACTERS...\n\n");
-        else
-            printf("\t\tPASSWORD CHANGED SUCCESSFULLY\n");
-            passflag = 0;
-    }
+        i=0;
+        char pass[20] = {0}, confirm[20] = {0}, ch;
 
-    FILE *fptr = fopen ("userdata", "r+");
+        printf("\n\n\t\tENTER THE NEW PASSWORD: ");
+        fflush(stdin);
+        pass[0] = getch();
 
-    fprintf(fptr, temppass);
-    fclose(fptr);
+        while(pass[i]!='\r'){
+            if(pass[i]=='\b'){
+                i--;
+                printf("\b");
+                printf(" ");
+                printf("\b");
+                pass[i]=getch();
+            }
+            else{
+                printf("*");
+                i++;
+                pass[i]=getch();
+            }
+        }
+        pass[i]='\0';
+        i=0;
 
-    */
-    printf("\n\t\tWHAT WOULD YOU LIKE TO DO :\n\n\t\t(1). Go to Login Menu\n\t\t(2). Exit Program\n\n\t\tEnter your choice: ");
+        printf("\n\t\tPLEASE CONFIRM THE PASSWORD: ");
+        confirm[0] = getch();
 
-    int choice;
-    scanf("%d", &choice);
+        while(confirm[i]!='\r'){
+            if(confirm[i]=='\b'){
+                i--;
+                printf("\b");
+                printf(" ");
+                printf("\b");
+                confirm[i]=getch();
+            }
+            else{
+                printf("*");
+                i++;
+                confirm[i]=getch();
+            }
+        }
+        confirm[i]='\0';
 
-    system("cls");
-    if(choice == 1){
-        login();
-    } else {
-        exit_diary();
-    }
+        if(!strcmp(pass,confirm)){
+            i=0;
+            while(pass[i]!='\0'){
+                ch = pass[i];
+                putc(ch,fptr);
+                i++;
+            }
+            fclose(fptr);
+            flg = 0;
+        }
+        else{
+            printf("\n\t\tTHE NEW PASSWORD DOES NOT MATCH.");
+            flg = 1;
+            fclose(fptr);
+        }
+
+    } while(flg);
+
+    printf("\n\n\t\tPASSWORD CHANGED...\n\n\t\tPlease login again! Closing Diary...\n\n");
+
+    exit(0);
 }
 
 void exit_diary(){
@@ -352,5 +391,8 @@ void exit_diary(){
     exit(0);
 
 }
+
+
+
 
 
