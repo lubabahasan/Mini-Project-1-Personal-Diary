@@ -35,22 +35,25 @@ void login(){
     char givenpass[20];
 
     banner();
-    printf("\t\t\t .------------.\n");
-    printf("\t\t\t<  LOGIN MENU  >\n");
-    printf("\t\t\t '------------'\n\n");
+    printf("\t\t\t\t .------------.\n");
+    printf("\t\t\t\t<  LOGIN MENU  >\n");
+    printf("\t\t\t\t '------------'\n\n");
 
     FILE *fptr = fopen("userdata", "r");
-    char checkpass[20];
-    fgets(checkpass, 21, fptr);
-    if(!strcmp(checkpass,"PNSY")){ //PasswordNotSetYet
-        fclose(fptr);
+
+    fseek (fptr, 0, SEEK_END);
+    if(fptr==NULL || !ftell(fptr)){
         printf("\t\tNEW USER DETECTED\n\n\t\tPRESS ANY KEY TO CONTINUE...\n\t\t");
         getch();
         editpassword(1);
     }
 
+    rewind(fptr);
+    char checkpass[20];
+    fgets(checkpass, 21, fptr);
+
     do{
-        printf("\n\t\tENTER PASSWORD: ");
+        printf("\n\t\tENTER PASSWORD : ");
 
         while(i<21){
             givenpass[i]=getch();
@@ -85,9 +88,10 @@ void login(){
         if(opt=='Y' || opt=='y'){
             system("cls");
             login();
-        }
-        else {
+        } else {
             printf("\n\n\t\tClosing Diary...\n\n\n");
+            printf("\n\n\t\tPRESS ANY KEY TO CLOSE THE DIARY");
+            getch();
             exit(0);
         }
     }
@@ -111,9 +115,9 @@ void select_option(){
     while(1){
 
         banner();
-        printf("\t\t\t .-------------.\n");
-        printf("\t\t\t<   MAIN MENU   >\n");
-        printf("\t\t\t '-------------'\n\n");
+        printf("\t\t\t\t .-------------.\n");
+        printf("\t\t\t\t<   MAIN MENU   >\n");
+        printf("\t\t\t\t '-------------'\n\n");
         printf("\t\t(1). Add Record\n\t\t(2). View Record\n");
         printf("\t\t(3). Delete Record\n\t\t(4). Change Password\n");
         printf("\t\t(0). Exit\n\n\t\tEnter your choice: ");
@@ -143,7 +147,6 @@ void select_option(){
             break;
         case '0':
             exit_diary();
-            exit(0);
             break;
     }
 }
@@ -156,9 +159,9 @@ void addrecord(){
 
         system("cls");
         banner();
-        printf("\t\t\t .--------------.\n");
-        printf("\t\t\t<  Add Record... >\n");
-        printf("\t\t\t '--------------'\n\n");
+        printf("\t\t\t\t .--------------.\n");
+        printf("\t\t\t\t<  Add Record... >\n");
+        printf("\t\t\t\t '--------------'\n\n");
 
         printf("\t\tENTER DATE:\n\t\t(DD.MM.YYYY) : ");
         scanf("%s", date);
@@ -199,9 +202,9 @@ void readrecord(){
 
         system("cls");
         banner();
-        printf("\t\t\t .---------------.\n");
-        printf("\t\t\t<  Read Record... >\n");
-        printf("\t\t\t '---------------'\n\n");
+        printf("\t\t\t\t .---------------.\n");
+        printf("\t\t\t\t<  Read Record... >\n");
+        printf("\t\t\t\t '---------------'\n\n");
 
         printf("\t\tENTER DATE:\n\t\t(DD.MM.YYYY) : ");
         scanf("%s", date);
@@ -213,8 +216,9 @@ void readrecord(){
         if(fptr==NULL || !ftell(fptr))
             printf("\n\t\tNO RECORDS MADE ON THIS DATE\n");
         else {
-            char *dtr = r.date;
-            printf("\n\t\tTHE RECORDS OF %.10s ARE:\n",dtr);
+            char readdate[10];
+            strncat(readdate, date, 10);
+            printf("\n\t\tTHE RECORDS OF %s ARE:\n",readdate);
             rewind(fptr);
             while(fread(&r, sizeof(r), 1, fptr)== 1){
                 char *str = r.time;
@@ -241,9 +245,9 @@ void deleterecord(){
     while(1){
         system("cls");
         banner();
-        printf("\t\t\t .-----------------.\n");
-        printf("\t\t\t<  Delete Record... >\n");
-        printf("\t\t\t '-----------------'\n\n");
+        printf("\t\t\t\t .-----------------.\n");
+        printf("\t\t\t\t<  Delete Record... >\n");
+        printf("\t\t\t\t '-----------------'\n\n");
 
         printf("\n\t\tENTER DATE:\n\t\t(DD.MM.YYYY) : ");
         scanf("%s", date);
@@ -310,9 +314,9 @@ void editpassword(int newuserdetect){
 
     system("cls");
     banner();
-    printf("\t\t\t .---------------.\n");
-    printf("\t\t\t<  Edit Password  >\n");
-    printf("\t\t\t '---------------'\n\n");
+    printf("\t\t\t\t .---------------.\n");
+    printf("\t\t\t\t<  Edit Password  >\n");
+    printf("\t\t\t\t '---------------'\n\n");
 
     int a = 0, i = 0;
 
@@ -320,6 +324,7 @@ void editpassword(int newuserdetect){
         FILE *fptr = fopen("userdata", "r");
         char old[20], inp[20], c;
         fgets(old, 21, fptr);
+
         do{
             printf("\n\t\tENTER THE CURRENT PASSWORD: ");
 
@@ -346,6 +351,8 @@ void editpassword(int newuserdetect){
         fclose(fptr);
         if(a>2){
             printf("\n\t\tWRONG PASSWORD ENTERED THREE TIMES!\n\t\tACCESS DENIED!\n\n\t\tClosing Diary...\n\n\n");
+            printf("\n\n\t\tPRESS ANY KEY TO CLOSE THE DIARY");
+            getch();
             exit(0);
         }
     }
@@ -422,7 +429,8 @@ void editpassword(int newuserdetect){
     } while(flg);
 
     printf("\n\n\t\tPASSWORD CHANGED SUCCESSFULLY...\n\n\t\tPLEASE LOGIN AGAIN!\n\n\t\tClosing Diary...\n\n");
-
+    printf("\n\n\t\tPRESS ANY KEY TO CLOSE THE DIARY");
+    getch();
     exit(0);
 }
 
@@ -431,13 +439,15 @@ void exit_diary(){
     system("cls");
     banner();
     printf("\n\n\t\tThank you for using the program ~ <3\n\n\n");
-    printf("\t\t      wWWWw\t\t wWWWw\n");
-    printf("\t\tvVVVv (___) wWWWw\t (___)  vVVVv\n");
-    printf("\t\t(___)  ~Y~  (___)  vVVVv  ~Y~   (___)\n");
-    printf("\t\t ~Y~   \\|    ~Y~   (___)   |/    ~Y~\n");
-    printf("\t\t \\|   \\ |/   \\| /   ~Y~   \\|    \\ |/\n");
-    printf("\t\t \\|/   \\|/   \\|/    \\|/   \\|/    \\\|/ \n");
-    printf("\t\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\t\tart by: Joan G. Stark\n\n\n");
+    printf("\t\t       wWWWw\t\t wWWWw\n");
+    printf("\t\tvVVVv  (___) wWWWw\t (___)  vVVVv\n");
+    printf("\t\t(___)   ~Y~  (___)  vVVVv  ~Y~   (___)\n");
+    printf("\t\t ~Y~    \\|    ~Y~   (___)   |/    ~Y~\n");
+    printf("\t\t \\|    \\ |/   \\| /   ~Y~   \\|    \\ |/\n");
+    printf("\t\t \\|/    \\|/   \\|/    \\|/   \\|/    \\\|/ \n");
+    printf("\t\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\t\tart by: Joan G. Stark\n\n\n");
+    printf("\n\n\t\tPRESS ANY KEY TO CLOSE THE DIARY");
+    getch();
     exit(0);
 
 }
