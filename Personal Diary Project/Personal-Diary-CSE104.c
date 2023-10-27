@@ -10,7 +10,6 @@ void login();
 void select_option();
 void addrecord();
 void readrecord();
-void editrecord();
 void deleterecord();
 void editpassword();
 void exit_diary();
@@ -116,16 +115,14 @@ void select_option(){
         printf("\t\t\t<   MAIN MENU   >\n");
         printf("\t\t\t '-------------'\n\n");
         printf("\t\t(1). Add Record\n\t\t(2). View Record\n");
-        printf("\t\t(3). Edit Record\n\t\t(4). Delete Record\n");
-        printf("\t\t(5). Change Password\n\t\t(6). Exit\n\n");
-        printf("\t\tEnter your choice: ");
+        printf("\t\t(3). Delete Record\n\t\t(4). Change Password\n");
+        printf("\t\t(0). Exit\n\n\t\tEnter your choice: ");
 
         scanf(" %c", &opt);
 
-        if(opt>'6' || opt<'1'){
+        if(opt>'5' || opt<'0'){
             printf("\n\t\tYou've entered the wrong choice\n\n\t\tPRESS ANY KEY TO TRY AGAIN\n\t\t");
             getch();
-            opt = 0;
             system("cls");
         } else
             break;
@@ -139,15 +136,12 @@ void select_option(){
             readrecord();
             break;
         case '3':
-            editrecord();
-            break;
-        case '4':
             deleterecord();
             break;
-        case '5':
+        case '4':
             editpassword();
             break;
-        case '6':
+        case '0':
             exit_diary();
             exit(0);
             break;
@@ -169,17 +163,17 @@ void addrecord(){
         printf("\t\tENTER DATE:\n\t\t(DD.MM.YYYY) : ");
         scanf("%s", date);
         strncat(date, ".txt", 4);
+
         FILE *fptr = fopen(date, "a");
 
         printf("\n\t\tENTER TIME:\n\t\t(HH.MM XM) : ");
         scanf(" %[^\n]c", time);
-
         strcpy(r.time, time);
-        printf("\n\t\tENTER RECORD:\n\t\t");
 
+        printf("\n\t\tENTER RECORD:\n\t\t");
         scanf(" %[^\n]s", r.body);
 
-        fwrite(&r,sizeof(r),1,fptr);
+        fwrite(&r, sizeof(r), 1, fptr);
 
         printf("\n\t\tYOUR RECORD IS ADDED...\n");
         fclose(fptr);
@@ -201,9 +195,7 @@ void addrecord(){
 
 void readrecord(){
 
-    int more = 1;
-
-    while(more){
+    while(1){
 
         system("cls");
         banner();
@@ -211,27 +203,23 @@ void readrecord(){
         printf("\t\t\t<  Read Record... >\n");
         printf("\t\t\t '---------------'\n\n");
 
-        printf("\t\tENTER DATE:\n\t\t(dd.mm.yyyy) : ");
+        printf("\t\tENTER DATE:\n\t\t(DD.MM.YYYY) : ");
         scanf("%s", date);
-
         strncat(date, ".txt", 4);
         FILE *fptr = fopen(date, "r");
 
-        if(fptr==NULL)
+        fseek (fptr, 0, SEEK_END);
+
+        if(fptr==NULL || !ftell(fptr))
             printf("\n\t\tNO RECORDS MADE ON THIS DATE\n");
-        else{
-            fseek(fptr, 0, SEEK_END);
-            if(!ftell(fptr)) {
-                printf("\n\t\tNO RECORDS MADE ON THIS DATE\n");
-            } else {
-                char *dtr = r.date;
-                printf("\n\t\tTHE RECORDS OF %.10s ARE:\n",dtr);
-                rewind(fptr);
-                while(fread(&r, sizeof(r), 1, fptr)== 1 ){
-                    char *str = r.time;
-                    printf("\n\t\tTIME   : %.8s",str);
-                    printf("\n\t\tRECORD : %s\n",r.body);
-                }
+        else {
+            char *dtr = r.date;
+            printf("\n\t\tTHE RECORDS OF %.10s ARE:\n",dtr);
+            rewind(fptr);
+            while(fread(&r, sizeof(r), 1, fptr)== 1){
+                char *str = r.time;
+                printf("\n\t\tTIME   : %.8s",str);
+                printf("\n\t\tRECORD : %s\n",r.body);
             }
         }
 
@@ -248,24 +236,73 @@ void readrecord(){
 
 }
 
-void editrecord(){
-
-    system("cls");
-    banner();
-    printf("\t\t\t .---------------.\n");
-    printf("\t\t\t<  Edit Record... >\n");
-    printf("\t\t\t '---------------'\n\n");
-
-
-}
-
 void deleterecord(){
 
-    system("cls");
-    banner();
-    printf("\t\t\t .-----------------.\n");
-    printf("\t\t\t<  Delete Record... >\n");
-    printf("\t\t\t '-----------------'\n\n");
+    while(1){
+        system("cls");
+        banner();
+        printf("\t\t\t .-----------------.\n");
+        printf("\t\t\t<  Delete Record... >\n");
+        printf("\t\t\t '-----------------'\n\n");
+
+        printf("\n\t\tENTER DATE:\n\t\t(DD.MM.YYYY) : ");
+        scanf("%s", date);
+        strncat(date, ".txt", 4);
+        FILE *fptr = fopen(date, "w"), *temptr;
+
+        fseek (fptr, 0, SEEK_END);
+
+        if(fptr==NULL || !ftell(fptr))
+            printf("\n\t\tNO RECORDS MADE ON THIS DATE\n");
+        else {
+            printf("\n\n\t\tWHAT WOULD YOU LIKE TO DO:");
+            printf("\n\n\t\t(1) DELETE A WHOLE DAY'S ENTRY\n\t\t(2) DELETE A SINGLE ENTRY OF A DAY");
+            int choice;
+
+            while(1){
+                printf("\n\n\t\tENTER YOU CHOICE: ");
+                scanf("%d", &choice);
+                if(choice!=1 && choice!=2){
+                    printf("\n\t\tYou've entered the wrong choice\n\n\t\tPRESS ANY KEY TO TRY AGAIN\n\t\t");
+                    getch();
+                } else
+                    break;
+            }
+
+            switch(choice){
+                case 1:
+                    fclose(fptr);
+                    remove(date);
+                    printf("\n\t\tTHE RECORD HAS BEEN DELETED SUCCESFULLY...");
+                    break;
+                case 2:
+                    temptr = fopen("temp", "w");
+                    printf("\n\t\tENTER TIME:\n\t\t(HH.MM XM) : ");
+                    scanf(" %[^\n]c", time);
+
+                    while(fread(&r, sizeof(r), 1, fptr)==1){
+                        char comptime[8];
+                        strncat(comptime, r.time, 8);
+                        if(strcmp(comptime,time)!=0)
+                            fwrite(&r, sizeof(r), 1, temptr);
+                    }
+                    fclose(fptr);
+                    fclose(temptr);
+                    remove(date);
+                    rename("temp",date);
+                    printf("\n\t\tTHE RECORD HAS BEEN DELETED SUCCESFULLY...");
+                    break;
+            }
+        }
+
+        printf("\n\n\t\t(1) Go Back    (2) Delete Another Record    (0) Exit\n\n\t\tEnter your choice: ");
+        char c = getch();
+        if(c!='2' && c!='0'){
+            system("cls");
+            select_option();
+        } else if(c=='0')
+            exit_diary();
+    }
 
 }
 
@@ -321,7 +358,6 @@ void editpassword(int newuserdetect){
         char pass[20] = {0}, confirm[20] = {0}, ch;
 
         printf("\n\n\t\tENTER THE NEW PASSWORD: ");
-        //fflush(stdin);
         pass[0] = getch();
         printf("%c", pass[i]);
 
@@ -394,7 +430,7 @@ void exit_diary(){
 
     system("cls");
     banner();
-    printf("\n\n\t\tThank you for using the program ~ <3\n\n");
+    printf("\n\n\t\tThank you for using the program ~ <3\n\n\n");
     printf("\t\t      wWWWw\t\t wWWWw\n");
     printf("\t\tvVVVv (___) wWWWw\t (___)  vVVVv\n");
     printf("\t\t(___)  ~Y~  (___)  vVVVv  ~Y~   (___)\n");
